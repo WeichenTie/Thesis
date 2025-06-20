@@ -1,0 +1,4 @@
+ur-rtde==1.6.1
+ultralytics==8.3.151
+git+https://github.com/openai/CLIP.git
+pyrealsense2
