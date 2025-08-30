@@ -12,6 +12,11 @@ public:
         setAcceleration(10000);
     }
 
+    void setTargetPositionRadians(float targetRadians)
+    {
+        moveTo(targetRadians * STEPS_PER_RADIAN);
+    }
+
     void setup()
     {
         pinMode(M0, OUTPUT);
@@ -28,4 +33,6 @@ private:
     static constexpr int M2 = 17;
     static constexpr int DIR_PIN = 15;
     static constexpr int STEP_PIN = 16;
+
+    static constexpr int STEPS_PER_RADIAN = 21360;
 };

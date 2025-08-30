@@ -20,7 +20,7 @@ public:
     {
         digitalWrite(DIR_PIN_A, LOW);
         digitalWrite(DIR_PIN_B, HIGH);
-        analogWrite(PWM_PIN, 255);
+        analogWrite(PWM_PIN, 150);
         delay(3000);
         analogWrite(PWM_PIN, 0);
     }

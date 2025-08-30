@@ -3,11 +3,10 @@ import cv2
 from ultralytics import YOLOWorld
 import numpy as np
 
-# Load YOLOvWorld model (adjust path and class names accordingly)
-model = YOLOWorld("yolov8x-worldv2.pt")  # or path to your trained weights
+model = YOLOWorld("yolov8x-worldv2.pt") 
 model.set_classes(['navel orange'])
 
-model.conf = 0.3  # Confidence threshold
+model.conf = 0.5 
 
 # Configure RealSense
 pipeline = rs.pipeline()

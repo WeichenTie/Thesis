@@ -11,6 +11,8 @@ class Config:
     scanning_position_l: tuple
     gripper_position_l_high: tuple
     gripper_position_l: tuple
+    completed_position_l: tuple
+    completed_position_l_high: tuple
 
 
 class URController:
@@ -21,8 +23,11 @@ class URController:
             home_position_j=(0.0, -1.309, 1.5708, -1.8326, -1.5708, 0),
             scanning_position_l=(-0.5344, -0.159, 0.75115, 2.204,2.202, 0),
             gripper_position_l_high=(-0.90936, -0.56774, 0.51818, 2.219, 2.218, 0),
-            gripper_position_l=(-0.90936, -0.56774, 0.23318, 2.219, 2.218, 0),
+            gripper_position_l=(-0.90936, -0.56774, 0.24, 2.219, 2.218, 0),
+            completed_position_l=(-0.95, -0.020, 0.09, 2.219, 2.218, 0),
+            completed_position_l_high=(-0.95, -0.020, 0.51818, 2.219, 2.218, 0),
         )
+        self.scan_count = 0
 
     def set_config(self, config: Config):
         self.config = config
@@ -32,7 +37,6 @@ class URController:
         self.rtde_control.moveJ(self.config.home_position_j)
 
     def move_into_gripper(self):
-        self.home()
         print('[URController] moving to gripper position')
         self.rtde_control.moveL(self.config.gripper_position_l_high)
         self.rtde_control.moveL(self.config.gripper_position_l)
@@ -53,9 +57,26 @@ class URController:
         current_pose = self.rtde_receive.getActualTCPPose()
         new_pose = tuple(np.add(current_pose, offset))
         self.rtde_control.moveL(new_pose)
-    
+
+    def move_to_completed_high(self):
+        print('[URController] moving away from gripper position')
+        clone = list(self.config.completed_position_l_high[:])
+        clone[0] += 0.1 * self.scan_count
+        self.rtde_control.moveL(clone)
+
+    def move_to_completed(self):
+        print('[URController] moving away from gripper position')
+        clone = list(self.config.completed_position_l[:])
+        clone[0] += 0.1 * self.scan_count
+        self.rtde_control.moveL(clone)
+
+        self.scan_count += 1
+
+    def get_position(self):
+        return self.rtde_receive.getActualTCPPose()
+
     def clamp(self):
-        requests.get("http://192.168.1.1/api/dc/rgxp2/set_width/0/60/8")
+        requests.get("http://192.168.1.1/api/dc/rgxp2/set_width/0/60/12")
         time.sleep(2.5)
 
     def unclamp(self):
@@ -67,10 +88,9 @@ class URController:
 
 if __name__=='__main__':
     controller = URController()
-    time.sleep(1)
-    controller.home()
-    time.sleep(1)
-    time.sleep(1)
-    controller.move_to_scanning_position()
-    time.sleep(1)
-    controller.home()
+    controller.move_to_completed_high()
+    controller.move_to_completed()
+
+    controller.move_to_completed_high()
+    controller.move_to_completed()
+    controller.move_to_completed()
